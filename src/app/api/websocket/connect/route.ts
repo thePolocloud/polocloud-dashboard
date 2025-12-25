@@ -144,4 +144,29 @@ function determineBackendProtocol(backendIp: string): 'ws' | 'wss' {
   return 'ws';
 }
 
+export function cleanupConnection(
+    connectionKey: string,
+    code?: number
+) {
+    const ws = wsConnections.get(connectionKey);
+
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.close(code);
+    }
+
+    wsConnections.delete(connectionKey);
+
+    const queue = messageQueues.get(connectionKey);
+    if (queue) {
+        queue.push({
+            type: 'disconnect',
+            code,
+            timestamp: Date.now(),
+        });
+    }
+
+    messageQueues.delete(connectionKey, cleanupConnection);
+}
+
+
 export { wsConnections, messageQueues };

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { wsConnections, messageQueues, cleanupConnection } from '../connect/route';
+import {cleanupConnection} from "@/app/api/websocket/connect/route";
 
 export async function POST(request: NextRequest) {
   try {
